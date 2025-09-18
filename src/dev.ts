@@ -1,15 +1,4 @@
-# @comet/dev-oidc-provider
-
-This package can be used to spin up an OIDC provider for local development.
-
-## Installation
-
-`npm i -D @comet/dev-oidc-provider`
-
-## Usage
-
-```
-import { startDevOidcProvider } from "@comet/dev-oidc-provider";
+import { startDevOidcProvider } from "src";
 
 startDevOidcProvider({
     userProvider: () => [
@@ -25,4 +14,3 @@ startDevOidcProvider({
         },
     ],
 });
-```

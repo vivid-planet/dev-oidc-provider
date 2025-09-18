@@ -1,0 +1,36 @@
+name: Lint
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
+      - next
+  pull_request:
+    branches:
+      - main
+      - next
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ github.actor }}"
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+
+      - run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint

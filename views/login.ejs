@@ -1,0 +1,8 @@
+<form autocomplete="off" action="/interaction/<%= uid %>/login" method="post">
+  <select name="login" required>
+    <% for(var i=0; i < users.length; i++) { %>
+    <option value="<%= users[i].id %>"><%= users[i].name %></option>
+    <% } %>
+  </select>
+  <button type="submit" class="login">Sign-in</button>
+</form>
