@@ -1,16 +1,8 @@
-#!/usr/bin/env bash
-set -e
-cd $(dirname $0)
+## Local development
 
-npx tsx dev.ts
+1. Start OIDC-Provider (uses `dev-oidc-provider.config.mts`)
 
-docker run --rm -it --network="host" $(docker build -q .) --client-id comet-demo-client --client-secret secret
-
-# Local development of @comet/dev-oidc-provider
-
-1. Start OIDC-Provider
-
-    `npx tsx dev.ts`
+    `npx tsx ../src/run.ts`
 
 2. Start OIDC-Client (via Docker)
 

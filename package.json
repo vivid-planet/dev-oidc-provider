@@ -13,6 +13,9 @@
     "author": "Vivid Planet Software GmbH <office@vivid-planet.com> (https://www.vivid-planet.com/)",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
+    "bin": {
+        "dev-oidc-provider": "lib/run.js"
+    },
     "scripts": {
         "build": "tsc",
         "lint": "run-p lint:eslint lint:tsc",
@@ -25,7 +28,8 @@
         "@koa/ejs": "^5.1.0",
         "@koa/router": "^14.0.0",
         "koa-body": "^6.0.1",
-        "oidc-provider": "^9.5.1"
+        "oidc-provider": "^9.5.1",
+        "unconfig": "^7.3.3"
     },
     "devDependencies": {
         "@changesets/cli": "^2.29.7",

@@ -44,3 +44,7 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
         process.exitCode = 1;
     }
 };
+
+export function defineConfig(config: DevOidcProviderConfig): DevOidcProviderConfig {
+    return config;
+}

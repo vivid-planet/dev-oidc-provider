@@ -1,6 +1,6 @@
-import { startDevOidcProvider } from "../src/index";
+import { defineConfig } from "../src";
 
-startDevOidcProvider({
+export default defineConfig({
     userProvider: () => [
         {
             id: "1",
