@@ -15,7 +15,6 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "dev": "tsx src/dev.ts",
         "lint": "run-p lint:eslint lint:tsc",
         "lint:ci": "npm run lint",
         "lint:eslint": "eslint --max-warnings 0 --ext .ts,.tsx,.js,.jsx,.json,.md src/ package.json",

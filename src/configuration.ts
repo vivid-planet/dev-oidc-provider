@@ -1,15 +1,9 @@
-import { type Configuration } from "oidc-provider";
-import { type User } from "src";
+import { type ClientMetadata, type Configuration } from "oidc-provider";
 
-export const createConfiguration: (users: User[]) => Configuration = (users) => ({
-    clients: [
-        {
-            client_id: "comet-demo-client",
-            client_secret: "secret",
-            redirect_uris: ["http://localhost:8000/oauth2/callback"],
-            post_logout_redirect_uris: ["http://localhost:8000/oauth2/sign_out?rd=%2F"],
-        },
-    ],
+import { type User } from "./";
+
+export const createConfiguration: (users: User[], client: ClientMetadata) => Configuration = (users, client) => ({
+    clients: [client],
     findAccount: async (_ctx, sub) => {
         const index = users.findIndex((u) => u.id === sub);
         const user = users[index] ? users[index] : users[0];

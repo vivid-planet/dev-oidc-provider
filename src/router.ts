@@ -1,7 +1,8 @@
 import Router from "@koa/router";
 import { koaBody as bodyParser } from "koa-body";
 import type Provider from "oidc-provider";
-import { type User } from "src";
+
+import { type User } from "./";
 
 export const createRouter = (provider: Provider, users: User[]) => {
     const router = new Router();

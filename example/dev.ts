@@ -1,4 +1,4 @@
-import { startDevOidcProvider } from "src";
+import { startDevOidcProvider } from "../src/index";
 
 startDevOidcProvider({
     userProvider: () => [
@@ -13,4 +13,9 @@ startDevOidcProvider({
             email: "non-admin@comet-dxp.com",
         },
     ],
+    client: {
+        client_id: "comet-demo-client",
+        client_secret: "secret",
+        redirect_uris: ["http://localhost:5555/callback"],
+    },
 });

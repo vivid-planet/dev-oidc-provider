@@ -1,5 +1,5 @@
 import render from "@koa/ejs";
-import Provider from "oidc-provider";
+import Provider, { type ClientMetadata } from "oidc-provider";
 
 import { createConfiguration } from "./configuration";
 import { createRouter } from "./router";
@@ -14,6 +14,7 @@ export type DevOidcProviderConfig = {
     port?: number;
     issuer?: string;
     userProvider: () => Promise<Array<User>> | Array<User>;
+    client: ClientMetadata;
 };
 
 export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
@@ -21,7 +22,7 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
     try {
         const users = await config.userProvider();
         const { port = 8080, issuer = `http://localhost:${port}` } = config;
-        const provider = new Provider(issuer, createConfiguration(users));
+        const provider = new Provider(issuer, createConfiguration(users, config.client));
 
         render(provider, {
             cache: false,
