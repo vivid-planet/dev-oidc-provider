@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - next
+      - initial
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
