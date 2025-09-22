@@ -1,5 +1,6 @@
-import { type DevOidcProviderConfig, startDevOidcProvider } from "src";
 import { loadConfig } from "unconfig";
+
+import { type DevOidcProviderConfig, startDevOidcProvider } from "./";
 
 async function runFromCli() {
     const { config, sources } = await loadConfig<DevOidcProviderConfig>({

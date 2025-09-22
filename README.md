@@ -13,7 +13,7 @@ The name must be dev-oidc-provider.config.mts and you have to place the working 
 Example:
 
 ```ts title="dev-oidc-provider.config.mts"
-import { defineConfig } from "./src";
+import { defineConfig } from "@comet/dev-oidc-provider";
 
 export default defineConfig({
     userProvider: () => [
