@@ -4,6 +4,10 @@ import { type User } from "./";
 
 export const createConfiguration: (users: User[], client: ClientMetadata) => Configuration = (users, client) => ({
     clients: [client],
+    clientDefaults: {
+        grant_types: ["authorization_code", "refresh_token"],
+        token_endpoint_auth_method: "client_secret_post",
+    },
     findAccount: async (_ctx, sub) => {
         const index = users.findIndex((u) => u.id === sub);
         const user = users[index] ? users[index] : users[0];
@@ -27,6 +31,7 @@ export const createConfiguration: (users: User[], client: ClientMetadata) => Con
                 });
             },
         },
+        introspection: { enabled: true },
     },
     // Skip consent prompt: https://github.com/panva/node-oidc-provider/discussions/1307
     async loadExistingGrant(ctx) {
@@ -60,9 +65,11 @@ export const createConfiguration: (users: User[], client: ClientMetadata) => Con
         });
 
         grant.addOIDCScope("openid email profile");
-        grant.addOIDCClaims(["first_name"]);
-        grant.addResourceScope("urn:example:resource-indicator", "api:read api:write");
+        grant.addOIDCClaims(["name"]);
         await grant.save();
         return grant;
+    },
+    async issueRefreshToken(ctx, client, code) {
+        return true;
     },
 });
