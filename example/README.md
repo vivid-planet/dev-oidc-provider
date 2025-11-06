@@ -2,9 +2,9 @@
 
 1. Start OIDC-Provider (uses `dev-oidc-provider.config.mts`)
 
-    `npx tsx ../src/run.ts`
+    `npm run build && node ../lib/run.js`
 
-2. Start OIDC-Client (via Docker)
+2. Start OIDC-Client (via Docker, make sure to have "Enable host networking" activated)
 
     `docker run --rm -it --network="host" $(docker build -q .) --client-id comet-demo-client --client-secret secret`
 
