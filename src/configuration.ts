@@ -13,12 +13,12 @@ export const createConfiguration: (users: User[], client: ClientMetadata) => Con
         const user = users[index] ? users[index] : users[0];
         return {
             accountId: sub,
-            claims: () => ({ sub, email: user.email, name: user.name }),
+            claims: () => ({ sub, ...user }),
         };
     },
     claims: {
         email: ["email"],
-        profile: ["name"],
+        profile: users.length > 0 ? Object.keys(users[0]).filter((key) => key !== "id" && key !== "email") : [],
     },
     conformIdTokenClaims: false,
     features: {
