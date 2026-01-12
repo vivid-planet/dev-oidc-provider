@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { loadConfig } from "unconfig";
 
 import { type DevOidcProviderConfig, startDevOidcProvider } from "./";
