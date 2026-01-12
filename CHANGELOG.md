@@ -1,5 +1,11 @@
 # @comet/dev-oidc-provider
 
+## 1.2.1
+
+### Patch Changes
+
+- ff6a368: Add shebang to bin-file
+
 ## 1.2.0
 
 ### Minor Changes
