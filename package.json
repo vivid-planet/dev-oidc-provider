@@ -22,7 +22,8 @@
         "lint:ci": "npm run lint",
         "lint:eslint": "eslint --max-warnings 0 --ext .ts,.tsx,.js,.jsx,.json,.md src/ package.json",
         "lint:prettier": "npx prettier --check './**/*.{js,json,md,yml,yaml}'",
-        "lint:tsc": "tsc --project ."
+        "lint:tsc": "tsc --project .",
+        "version": "changeset version && npm install"
     },
     "dependencies": {
         "@koa/ejs": "^5.1.0",
