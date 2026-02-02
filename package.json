@@ -41,7 +41,7 @@
         "@types/oidc-provider": "^9.5.0",
         "eslint": "^9.39.2",
         "npm-run-all2": "^8.0.4",
-        "prettier": "^3.8.0",
+        "prettier": "^3.8.1",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3"
     },
