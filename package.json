@@ -42,7 +42,7 @@
         "eslint": "^9.39.3",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.8.4",
-        "tsx": "^4.21.0",
+        "tsx": "^4.22.4",
         "typescript": "^5.9.3"
     },
     "engines": {
