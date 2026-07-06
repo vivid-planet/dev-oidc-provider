@@ -40,7 +40,7 @@
         "@types/node": "^24.13.2",
         "@types/oidc-provider": "^9.5.0",
         "eslint": "^9.39.4",
-        "npm-run-all2": "^8.0.4",
+        "npm-run-all2": "^9.0.2",
         "prettier": "^3.8.4",
         "tsx": "^4.22.4",
         "typescript": "^5.9.3"
