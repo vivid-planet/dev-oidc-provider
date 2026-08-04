@@ -1,10 +1,10 @@
-# @comet/dev-oidc-provider
+# dev-oidc-provider
 
 This package can be used to spin up an OIDC provider for local development.
 
 ## Installation
 
-`npm i -D @comet/dev-oidc-provider`
+`npm i -D dev-oidc-provider`
 
 ## Create config file
 
@@ -13,7 +13,7 @@ The name must be dev-oidc-provider.config.mts and you have to place the working 
 Example:
 
 ```ts title="dev-oidc-provider.config.mts"
-import { defineConfig } from "@comet/dev-oidc-provider";
+import { defineConfig } from "dev-oidc-provider";
 
 export default defineConfig({
     userProvider: () => [

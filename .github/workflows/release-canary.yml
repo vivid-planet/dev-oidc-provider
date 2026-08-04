@@ -28,7 +28,7 @@ jobs:
       - name: Publish Canary release
         run: |
           echo --- > .changeset/canary.md
-          echo '"@comet/dev-oidc-provider": patch' >> .changeset/canary.md
+          echo '"dev-oidc-provider": patch' >> .changeset/canary.md
           echo --- >> .changeset/canary.md
           echo >> .changeset/canary.md
           echo fake change to always get a canary release >> .changeset/canary.md
