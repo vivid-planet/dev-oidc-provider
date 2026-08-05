@@ -1,4 +1,4 @@
-# @comet/dev-oidc-provider
+# dev-oidc-provider
 
 ## 1.2.1
 
