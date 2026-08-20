@@ -1,8 +1,103 @@
-<form autocomplete="off" action="/interaction/<%= uid %>/login" method="post">
+<form autocomplete="off" action="/interaction/<%= uid %>/login" method="post" id="login-form">
+  <% if (useSearch) { %>
+  <div class="user-search">
+    <input type="text" id="user-search-input" placeholder="Search user by name or email…" autocomplete="off" />
+    <div id="user-search-results" class="user-search-results" hidden></div>
+  </div>
+  <input type="hidden" name="login" id="login-id" />
+  <script>
+    (function () {
+      var input = document.getElementById("user-search-input");
+      var hidden = document.getElementById("login-id");
+      var results = document.getElementById("user-search-results");
+      var form = document.getElementById("login-form");
+      var debounceTimer = null;
+      var requestId = 0;
+
+      function hideResults() {
+        results.innerHTML = "";
+        results.hidden = true;
+      }
+
+      function showLoading() {
+        results.innerHTML = "";
+        var loading = document.createElement("div");
+        loading.className = "user-search-loading";
+        loading.textContent = "Searching…";
+        results.appendChild(loading);
+        results.hidden = false;
+      }
+
+      function selectUser(user) {
+        hidden.value = user.id;
+        input.value = user.name + " (" + user.email + ")";
+        hideResults();
+      }
+
+      function renderResults(id, users) {
+        if (id !== requestId) return; // a newer search has since started; ignore this stale response
+        results.innerHTML = "";
+        if (!users.length) {
+          hideResults();
+          return;
+        }
+        users.forEach(function (user) {
+          var item = document.createElement("div");
+          item.className = "user-search-result";
+          item.textContent = user.name + " (" + user.email + ")";
+          item.addEventListener("click", function () {
+            selectUser(user);
+          });
+          results.appendChild(item);
+        });
+        results.hidden = false;
+      }
+
+      input.addEventListener("input", function () {
+        hidden.value = "";
+        var query = input.value.trim();
+        if (debounceTimer) clearTimeout(debounceTimer);
+        if (!query) {
+          requestId++;
+          hideResults();
+          return;
+        }
+        var id = ++requestId;
+        showLoading();
+        debounceTimer = setTimeout(function () {
+          fetch("/interaction/<%= uid %>/users?q=" + encodeURIComponent(query))
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (users) {
+              renderResults(id, users);
+            })
+            .catch(function () {
+              if (id === requestId) hideResults();
+            });
+        }, 200);
+      });
+
+      document.addEventListener("click", function (event) {
+        if (event.target !== input && !results.contains(event.target)) {
+          hideResults();
+        }
+      });
+
+      form.addEventListener("submit", function (event) {
+        if (!hidden.value) {
+          event.preventDefault();
+          input.focus();
+        }
+      });
+    })();
+  </script>
+  <% } else { %>
   <select name="login" required>
     <% for(var i=0; i < users.length; i++) { %>
     <option value="<%= users[i].id %>"><%= users[i].name %></option>
     <% } %>
   </select>
+  <% } %>
   <button type="submit" class="login">Sign-in</button>
 </form>
