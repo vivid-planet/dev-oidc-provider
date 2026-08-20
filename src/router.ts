@@ -2,9 +2,22 @@ import Router from "@koa/router";
 import { koaBody as bodyParser } from "koa-body";
 import type Provider from "oidc-provider";
 
-import type { User } from "./";
+import type { User, UserSearchParams } from "./";
 
-export const createRouter = (provider: Provider, users: User[]) => {
+const filterUsers = (users: User[], search: string) => {
+    const query = search.trim().toLowerCase();
+    if (!query) {
+        return [];
+    }
+    return users.filter((user) => user.id === search || user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query));
+};
+
+export const createRouter = (
+    provider: Provider,
+    users: User[],
+    userProvider: (params?: UserSearchParams) => Promise<User[]> | User[],
+    { useSearch }: { useSearch: boolean },
+) => {
     const router = new Router();
 
     router.get("/interaction/:uid", async (ctx, next) => {
@@ -15,8 +28,27 @@ export const createRouter = (provider: Provider, users: User[]) => {
         return ctx.render("login", {
             title: "Sign-in",
             uid,
-            users,
+            users: useSearch ? [] : users,
+            useSearch,
         });
+    });
+    router.get("/interaction/:uid/users", async (ctx, next) => {
+        const { prompt } = await provider.interactionDetails(ctx.req, ctx.res);
+        if (prompt.name != "login") {
+            return next();
+        }
+
+        const search = typeof ctx.query.q === "string" ? ctx.query.q : "";
+        if (!search.trim()) {
+            ctx.body = [];
+            return;
+        }
+        // userProvider may already have filtered/paginated by these params (e.g. a database
+        // query); filtering again here is a no-op in that case, but is required as a safety net
+        // for implementations that ignore the params and always return the full list. Either way,
+        // cap the result size.
+        const matches = filterUsers(await userProvider({ search, offset: 0, limit: 1000 }), search).slice(0, 1000);
+        ctx.body = matches;
     });
     router.post(
         "/interaction/:uid/login",
