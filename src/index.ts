@@ -10,10 +10,28 @@ export type User = {
     email: string;
 };
 
+export type UserSearchParams = {
+    search?: string;
+    offset: number;
+    limit: number;
+};
+
 export type DevOidcProviderConfig = {
     port?: number;
     issuer?: string;
-    userProvider: () => Promise<Array<User>> | Array<User>;
+    /**
+     * Called once at startup with no arguments to get the initial user list, used to resolve the
+     * signed-in account, derive the profile claim keys, and populate the login page's dropdown. If
+     * that call returns no users, the login page assumes you don't want to preload everyone and
+     * shows a search box instead, calling this again with `{ search, offset, limit }` set as you
+     * type.
+     *
+     * If your implementation ignores the params and always returns the full list, that's fine —
+     * matches are filtered in-memory regardless — but if your users come from a database or API,
+     * use `search`/`offset`/`limit` to only fetch matching users instead of loading everyone
+     * upfront.
+     */
+    userProvider: (params?: UserSearchParams) => Promise<Array<User>> | Array<User>;
     client: ClientMetadata;
 };
 
@@ -21,6 +39,9 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
     let server;
     try {
         const users = await config.userProvider();
+        // No users from the argument-less call means the implementation doesn't want to preload
+        // everyone, so the login page shows a search box instead of a dropdown.
+        const useSearch = users.length == 0;
         const { port = 8080, issuer = `http://localhost:${port}` } = config;
         const provider = new Provider(issuer, createConfiguration(users, config.client));
 
@@ -31,7 +52,7 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
             root: `${__dirname}/../views`,
         });
 
-        provider.use(createRouter(provider, users).routes());
+        provider.use(createRouter(provider, users, config.userProvider, { useSearch }).routes());
 
         server = provider.listen(port, () => {
             // eslint-disable-next-line no-console
