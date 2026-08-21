@@ -1,6 +1,6 @@
-import { type ClientMetadata, type Configuration } from "oidc-provider";
+import type { ClientMetadata, Configuration } from "oidc-provider";
 
-import { type User } from "./";
+import type { User } from "./";
 
 export const createConfiguration: (users: User[], client: ClientMetadata) => Configuration = (users, client) => ({
     clients: [client],
