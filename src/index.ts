@@ -39,7 +39,9 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
         });
         return server;
     } catch (err) {
-        if (server?.listening) server.close();
+        if (server?.listening) {
+            server.close();
+        }
         console.error(err);
         process.exitCode = 1;
     }

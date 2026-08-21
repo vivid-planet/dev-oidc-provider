@@ -2,14 +2,16 @@ import Router from "@koa/router";
 import { koaBody as bodyParser } from "koa-body";
 import type Provider from "oidc-provider";
 
-import { type User } from "./";
+import type { User } from "./";
 
 export const createRouter = (provider: Provider, users: User[]) => {
     const router = new Router();
 
     router.get("/interaction/:uid", async (ctx, next) => {
         const { uid, prompt } = await provider.interactionDetails(ctx.req, ctx.res);
-        if (prompt.name != "login") return next();
+        if (prompt.name != "login") {
+            return next();
+        }
         return ctx.render("login", {
             title: "Sign-in",
             uid,
@@ -25,9 +27,10 @@ export const createRouter = (provider: Provider, users: User[]) => {
             patchKoa: true,
         }),
         async (ctx) => {
+            const { login } = ctx.request.body as { login: string };
             return provider.interactionFinished(ctx.req, ctx.res, {
                 login: {
-                    accountId: ctx.request.body.login,
+                    accountId: login,
                 },
             });
         },
