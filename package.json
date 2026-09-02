@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "@changesets/cli": "^3.0.1",
-        "@dextinity/eslint-config": "^10.1.0",
+        "@dextinity/eslint-config": "^10.2.0",
         "@types/koa__ejs": "^5.1.1",
         "@types/node": "^24.13.3",
         "@types/oidc-provider": "^9.11.1",
