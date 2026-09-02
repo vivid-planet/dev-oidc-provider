@@ -21,10 +21,9 @@ export type DevOidcProviderConfig = {
     issuer?: string;
     /**
      * Called once at startup with no arguments to get the initial user list, used to resolve the
-     * signed-in account, derive the profile claim keys, and populate the login page's dropdown. If
-     * that call returns no users, the login page assumes you don't want to preload everyone and
-     * shows a search box instead, calling this again with `{ search, offset, limit }` set as you
-     * type.
+     * signed-in account, derive the profile claim keys, and, unless `enableUserSearch` is set,
+     * populate the login page's dropdown. When `enableUserSearch` is set, this is called again
+     * with `{ search, offset, limit }` set as you type in the login page's search box.
      *
      * If your implementation ignores the params and always returns the full list, that's fine —
      * matches are filtered in-memory regardless — but if your users come from a database or API,
@@ -32,16 +31,21 @@ export type DevOidcProviderConfig = {
      * upfront.
      */
     userProvider: (params?: UserSearchParams) => Promise<Array<User>> | Array<User>;
+    /**
+     * Switches the login page's user picker from a dropdown (listing the users returned by the
+     * initial `userProvider()` call) to a search box (calling `userProvider` again with
+     * `{ search, offset, limit }` as you type). Useful when there are too many users to preload
+     * and list upfront. Defaults to `false`.
+     */
+    enableUserSearch?: boolean;
     client: ClientMetadata;
 };
 
 export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
     let server;
     try {
+        const useSearch = config.enableUserSearch ?? false;
         const users = await config.userProvider();
-        // No users from the argument-less call means the implementation doesn't want to preload
-        // everyone, so the login page shows a search box instead of a dropdown.
-        const useSearch = users.length == 0;
         const { port = 8080, issuer = `http://localhost:${port}` } = config;
         const provider = new Provider(issuer, createConfiguration(users, config.client));
 

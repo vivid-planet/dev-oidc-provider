@@ -15,12 +15,15 @@ const users = [
 
 export default defineConfig({
     userProvider: (params) => {
-        if (!params || !params.search) return [];
+        if (!params?.search) {
+            return [];
+        }
         const search = params.search.toLowerCase();
         return users
             .filter((user) => user.name.toLowerCase().includes(search) || user.email.toLowerCase().includes(search))
             .slice(params.offset, params.offset + params.limit);
     },
+    enableUserSearch: true,
     client: {
         client_id: "demo-client",
         client_secret: "secret",
