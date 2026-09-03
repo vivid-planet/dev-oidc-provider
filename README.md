@@ -15,19 +15,21 @@ Example:
 ```ts title="dev-oidc-provider.config.mts"
 import { defineConfig } from "dev-oidc-provider";
 
+const users = [
+    {
+        id: "1",
+        name: "Admin",
+        email: "demo@example.com",
+    },
+    {
+        id: "2",
+        name: "Non-Admin",
+        email: "non-admin@example.com",
+    },
+];
+
 export default defineConfig({
-    userProvider: () => [
-        {
-            id: "1",
-            name: "Admin",
-            email: "demo@example.com",
-        },
-        {
-            id: "2",
-            name: "Non-Admin",
-            email: "non-admin@example.com",
-        },
-    ],
+    listUsers: () => users,
     client: {
         client_id: "demo-client",
         client_secret: "secret",
@@ -37,23 +39,36 @@ export default defineConfig({
 });
 ```
 
+`listUsers` is called once at startup to get every user. It populates the login page's dropdown
+and, unless `profileClaims` is set, is also used to derive the `profile` scope's claims (see
+below).
+
+> `userProvider` (the same shape as `listUsers`) still works as a deprecated alias, if you're
+> upgrading from an older version.
+
 ## Many users
 
-The login page normally lists every configured user in a dropdown. `userProvider` is called once
-at startup with no arguments to get the initial user list, used to resolve the signed-in account,
-derive the profile claims, and populate that dropdown.
-
-Set `enableUserSearch: true` if you have too many users to preload and list upfront. The login page
-then shows a search box instead of the dropdown: it starts out empty and only shows matches once
-you start typing, calling `userProvider` again with `{ search, offset: 0, limit: 1000 }`.
+If you have too many users to preload and list upfront, provide `searchUsers` and `getUser`
+instead of `listUsers`. The login page then shows a search box instead of the dropdown: it starts
+out empty and only shows matches once you start typing, calling `searchUsers` with
+`{ search, offset, limit }`. `getUser` resolves the signed-in account by id on every login — it's
+required in this mode since there's no preloaded list to look it up in.
 
 ```ts title="dev-oidc-provider.config.mts"
 export default defineConfig({
-    userProvider: (params) => searchUsers(params?.search, { offset: params?.offset, limit: params?.limit }),
-    enableUserSearch: true,
+    searchUsers: ({ search, offset, limit }) => searchUsersInDb(search, { offset, limit }),
+    getUser: (id) => findUserById(id),
+    profileClaims: ["name", "role"],
     // ...
 });
 ```
+
+## Profile claims
+
+The `profile` scope's claims are, by default, inferred from the keys of the first user returned by
+`listUsers` (excluding `id` and `email`). With `searchUsers` there's no preloaded list to infer
+from, so set `profileClaims` explicitly in that case — or whenever you want to control which
+fields are exposed regardless of what `listUsers` returns.
 
 ## Start dev-oidc-provider
 
