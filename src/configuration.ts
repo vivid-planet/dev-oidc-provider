@@ -1,16 +1,19 @@
 import type { ClientMetadata, Configuration } from "oidc-provider";
 
-import type { User } from "./";
+import type { GetUser } from "./";
 
-export const createConfiguration: (users: User[], client: ClientMetadata) => Configuration = (users, client) => ({
+export const createConfiguration: (getUser: GetUser, profileClaims: Array<string>, client: ClientMetadata) => Configuration = (
+    getUser,
+    profileClaims,
+    client,
+) => ({
     clients: [client],
     clientDefaults: {
         grant_types: ["authorization_code", "refresh_token"],
         token_endpoint_auth_method: "client_secret_post",
     },
-    findAccount: async (_ctx, sub) => {
-        const index = users.findIndex((u) => u.id === sub);
-        const user = users[index] ? users[index] : users[0];
+    findAccount: async (_ctx, sub: string) => {
+        const user = await getUser(sub);
         return {
             accountId: sub,
             claims: () => ({ sub, ...user }),
@@ -18,7 +21,7 @@ export const createConfiguration: (users: User[], client: ClientMetadata) => Con
     },
     claims: {
         email: ["email"],
-        profile: users.length > 0 ? Object.keys(users[0]).filter((key) => key !== "id" && key !== "email") : [],
+        profile: profileClaims,
     },
     conformIdTokenClaims: false,
     features: {
