@@ -1,5 +1,31 @@
 # dev-oidc-provider
 
+## 2.1.0
+
+### Minor Changes
+
+- 7176c3f: Add a search box for the login page for large user lists
+
+    `userProvider` now optionally receives a `{ search?: string; offset: number; limit: number }`
+    object. Set the new `enableUserSearch: true` config option to switch the login page's user picker
+    from a dropdown (populated by the existing startup call to `userProvider`) to a search box, which
+    calls `userProvider` again with `{ search, offset: 0, limit: 1000 }` as you type (debounced
+    client-side).
+
+    Existing implementations that ignore the params and always return the full list keep working
+    unchanged.
+
+### Patch Changes
+
+- 0919814: Upgraded `@koa/router` to v15, `koa-body` to v8, and `oidc-provider` to the latest v9 release, and modernized the build/lint tooling:
+
+    - Swapped `@comet/eslint-config` for `@dextinity/eslint-config` and `@changesets/cli` to v3
+    - Modernized `tsconfig.json` (target/lib/module/moduleResolution updated for Node 22+, dropped the deprecated `baseUrl`)
+    - Added `exports`, `files`, and `sideEffects` to `package.json` for a correct npm publish contract
+    - Bumped `actions/setup-node` to v7 in CI workflows
+
+    No public API changes.
+
 ## 2.0.0
 
 ### Major Changes
