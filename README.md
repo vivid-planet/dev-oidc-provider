@@ -37,6 +37,24 @@ export default defineConfig({
 });
 ```
 
+## Many users
+
+The login page normally lists every configured user in a dropdown. `userProvider` is called once
+at startup with no arguments to get the initial user list, used to resolve the signed-in account,
+derive the profile claims, and populate that dropdown.
+
+Set `enableUserSearch: true` if you have too many users to preload and list upfront. The login page
+then shows a search box instead of the dropdown: it starts out empty and only shows matches once
+you start typing, calling `userProvider` again with `{ search, offset: 0, limit: 1000 }`.
+
+```ts title="dev-oidc-provider.config.mts"
+export default defineConfig({
+    userProvider: (params) => searchUsers(params?.search, { offset: params?.offset, limit: params?.limit }),
+    enableUserSearch: true,
+    // ...
+});
+```
+
 ## Start dev-oidc-provider
 
 Execute `npx dev-oidc-provider` to start the application.
