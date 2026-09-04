@@ -1,5 +1,11 @@
 <div>
     <%- form %>
-    <button autofocus type="submit" class="login" form="op.logoutForm" value="yes" name="logout">Sign out</button>
-    <button type="submit" class="login" form="op.logoutForm">Stay signed in</button>
+    <input type="hidden" form="op.logoutForm" name="logout" value="yes" />
+    <noscript>
+        <button autofocus type="submit" class="login" form="op.logoutForm" value="yes" name="logout">Sign out</button>
+        <button type="submit" class="login" form="op.logoutForm">Stay signed in</button>
+    </noscript>
 </div>
+<script>
+    document.getElementById("op.logoutForm").submit();
+</script>
