@@ -1,6 +1,6 @@
 {
     "name": "dev-oidc-provider",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "homepage": "https://github.com/vivid-planet/dev-oidc-provider#readme",
     "bugs": {
         "url": "https://github.com/vivid-planet/dev-oidc-provider/issues"
