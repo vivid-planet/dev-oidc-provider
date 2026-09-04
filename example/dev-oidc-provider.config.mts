@@ -34,5 +34,6 @@ export default defineConfig({
         client_id: "demo-client",
         client_secret: "secret",
         redirect_uris: ["http://localhost:5555/callback"],
+        post_logout_redirect_uris: ["http://localhost:5555/"],
     },
 });
