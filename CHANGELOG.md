@@ -1,5 +1,13 @@
 # dev-oidc-provider
 
+## 2.1.2
+
+### Patch Changes
+
+- 61f2529: Skip the logout confirmation screen
+
+    RP-initiated logout no longer requires the user to click "Sign out" on an intermediate confirmation page. The logout form now auto-submits (falling back to the original confirmation buttons if JavaScript is disabled).
+
 ## 2.1.1
 
 ### Patch Changes
