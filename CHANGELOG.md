@@ -12,7 +12,7 @@
 
 ### Patch Changes
 
-- 2d6e6c0: ### Fix several issues introduced with `enableUserSearch`
+- 2d6e6c0: Fix several issues introduced with `enableUserSearch`
 
     Fix the id token not returning the requested scopes' claims when `enableUserSearch` was active. With search enabled, the initial `userProvider()` call (previously used both to resolve the signed-in account and to derive `profile` claims) returns no users up front, so the signed-in account's claims silently came up empty.
 
