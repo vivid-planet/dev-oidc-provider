@@ -51,7 +51,7 @@
         "@types/koa__ejs": "^5.1.1",
         "@types/node": "^24.19.2",
         "@types/oidc-provider": "^9.12.1",
-        "eslint": "^9.39.5",
+        "eslint": "^10.13.0",
         "npm-run-all2": "^9.0.3",
         "prettier": "^3.9.10",
         "tsx": "^4.23.15",
