@@ -67,16 +67,6 @@ export const createConfiguration: (
             // to prevent consent prompt being requested when grant expires
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const grant = (await ctx.oidc.provider.Grant.find(grantId)) as any;
-            let grantChanged = false;
-            for (const resource of Object.keys(ctx.oidc.resourceServers ?? {})) {
-                if (!grant.getResourceScope(resource)) {
-                    grant.addResourceScope(resource, resourceScope);
-                    grantChanged = true;
-                }
-            }
-            if (grantChanged) {
-                await grant.save();
-            }
 
             // this aligns the Grant ttl with that of the current session
             // if the same Grant is used for multiple sessions, or is set
