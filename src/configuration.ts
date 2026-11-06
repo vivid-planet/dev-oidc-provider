@@ -4,15 +4,6 @@ import type { GetUser, ResourceIndicatorsConfig } from "./";
 
 const resourceScope = "openid email profile offline_access";
 
-const isResourceAllowed = (resource: string, allowed: ResourceIndicatorsConfig["allowedResources"]) => {
-    if (allowed === "*") {
-        return true;
-    }
-    // compare normalized, so "http://localhost:4600" and "http://localhost:4600/" are treated the same
-    const normalize = (value: string) => URL.parse(value)?.href ?? value;
-    return allowed.some((entry) => normalize(entry) === normalize(resource));
-};
-
 export const createConfiguration: (
     getUser: GetUser,
     profileClaims: Array<string>,
@@ -52,18 +43,16 @@ export const createConfiguration: (
             ? {
                   resourceIndicators: {
                       enabled: true,
-                      // the resource is only used if the client sends it explicitly
-                      defaultResource: async (_ctx, _client, oneOf) => oneOf,
-                      useGrantedResource: async () => true,
                       getResourceServerInfo: async (_ctx, resourceIndicator) => {
-                          if (!isResourceAllowed(resourceIndicator, resourceIndicators.allowedResources)) {
+                          const { allowedResources } = resourceIndicators;
+                          if (allowedResources !== "*" && !allowedResources.includes(resourceIndicator)) {
                               throw new errors.InvalidTarget();
                           }
                           return {
                               scope: resourceScope,
                               // the resource becomes the `aud` claim of the access token
                               audience: resourceIndicator,
-                              accessTokenFormat: resourceIndicators.accessTokenFormat ?? "jwt",
+                              accessTokenFormat: "jwt",
                           };
                       },
                   },

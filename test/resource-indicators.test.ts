@@ -131,10 +131,4 @@ describe("resource indicators", () => {
         const { tokenResponse } = await runFlow(base, "http://localhost:9999/other");
         assert.equal(decodeJwt(tokenResponse?.access_token as string).aud, "http://localhost:9999/other");
     });
-
-    it("supports opaque access tokens", async () => {
-        const base = await start({ allowedResources: "*", accessTokenFormat: "opaque" });
-        const { tokenResponse } = await runFlow(base, "http://localhost:4600/mcp");
-        assert.equal((tokenResponse?.access_token as string).split(".").length, 1);
-    });
 });

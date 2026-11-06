@@ -22,11 +22,6 @@ export type ResourceIndicatorsConfig = {
      * listed are rejected with `invalid_target`.
      */
     allowedResources: Array<string> | "*";
-    /**
-     * Format of access tokens issued for a resource. The resource is set as `aud` claim.
-     * @default "jwt"
-     */
-    accessTokenFormat?: "jwt" | "opaque";
 };
 
 type SharedConfig = {

@@ -80,14 +80,12 @@ export default defineConfig({
     resourceIndicators: {
         // list of allowed resources, or "*" to accept any resource
         allowedResources: ["http://localhost:4600/mcp"],
-        // optional, "jwt" (default) or "opaque"
-        accessTokenFormat: "jwt",
     },
     // ...
 });
 ```
 
-The requested resource is set as `aud` claim of the access token. Note that the client has to send
+The requested resource is set as `aud` claim of the access token (a JWT). Note that the client has to send
 `resource` in the authorization request and in the token request. Access tokens issued for a
 resource are meant for that resource server, so they can't be used at the `userinfo` endpoint. The
 ID token is not affected. Without `resourceIndicators` nothing changes.
