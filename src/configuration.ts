@@ -1,12 +1,24 @@
-import type { ClientMetadata, Configuration } from "oidc-provider";
+import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
 
-import type { GetUser } from "./";
+import type { GetUser, ResourceIndicatorsConfig } from "./";
 
-export const createConfiguration: (getUser: GetUser, profileClaims: Array<string>, client: ClientMetadata) => Configuration = (
-    getUser,
-    profileClaims,
-    client,
-) => ({
+const resourceScope = "openid email profile offline_access";
+
+const isResourceAllowed = (resource: string, allowed: ResourceIndicatorsConfig["allowedResources"]) => {
+    if (allowed === "*") {
+        return true;
+    }
+    // compare normalized, so "http://localhost:4600" and "http://localhost:4600/" are treated the same
+    const normalize = (value: string) => URL.parse(value)?.href ?? value;
+    return allowed.some((entry) => normalize(entry) === normalize(resource));
+};
+
+export const createConfiguration: (
+    getUser: GetUser,
+    profileClaims: Array<string>,
+    client: ClientMetadata,
+    resourceIndicators?: ResourceIndicatorsConfig,
+) => Configuration = (getUser, profileClaims, client, resourceIndicators) => ({
     clients: [client],
     clientDefaults: {
         grant_types: ["authorization_code", "refresh_token"],
@@ -35,6 +47,28 @@ export const createConfiguration: (getUser: GetUser, profileClaims: Array<string
             },
         },
         introspection: { enabled: true },
+        // Without `resourceIndicators` config every `resource` parameter is rejected with `invalid_target` (default of oidc-provider)
+        ...(resourceIndicators
+            ? {
+                  resourceIndicators: {
+                      enabled: true,
+                      // the resource is only used if the client sends it explicitly
+                      defaultResource: async (_ctx, _client, oneOf) => oneOf,
+                      useGrantedResource: async () => true,
+                      getResourceServerInfo: async (_ctx, resourceIndicator) => {
+                          if (!isResourceAllowed(resourceIndicator, resourceIndicators.allowedResources)) {
+                              throw new errors.InvalidTarget();
+                          }
+                          return {
+                              scope: resourceScope,
+                              // the resource becomes the `aud` claim of the access token
+                              audience: resourceIndicator,
+                              accessTokenFormat: resourceIndicators.accessTokenFormat ?? "jwt",
+                          };
+                      },
+                  },
+              }
+            : {}),
     },
     // Skip consent prompt: https://github.com/panva/node-oidc-provider/discussions/1307
     async loadExistingGrant(ctx) {
@@ -45,6 +79,16 @@ export const createConfiguration: (getUser: GetUser, profileClaims: Array<string
             // to prevent consent prompt being requested when grant expires
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const grant = (await ctx.oidc.provider.Grant.find(grantId)) as any;
+            let grantChanged = false;
+            for (const resource of Object.keys(ctx.oidc.resourceServers ?? {})) {
+                if (!grant.getResourceScope(resource)) {
+                    grant.addResourceScope(resource, resourceScope);
+                    grantChanged = true;
+                }
+            }
+            if (grantChanged) {
+                await grant.save();
+            }
 
             // this aligns the Grant ttl with that of the current session
             // if the same Grant is used for multiple sessions, or is set
@@ -69,6 +113,9 @@ export const createConfiguration: (getUser: GetUser, profileClaims: Array<string
 
         grant.addOIDCScope("openid email profile");
         grant.addOIDCClaims(["name"]);
+        for (const resource of Object.keys(ctx.oidc.resourceServers ?? {})) {
+            grant.addResourceScope(resource, resourceScope);
+        }
         await grant.save();
         return grant;
     },

@@ -15,6 +15,20 @@ export type GetUser = (id: string) => Promise<User | undefined> | User | undefin
 export type SearchUsersParams = { search: string; offset: number; limit: number };
 export type SearchUsers = (params: SearchUsersParams) => Promise<Array<User>> | Array<User>;
 
+export type ResourceIndicatorsConfig = {
+    /**
+     * Resource Indicators (RFC 8707) that clients may request via the `resource` parameter.
+     * Either a list of URLs or `"*"` to accept any resource. Requested resources that are not
+     * listed are rejected with `invalid_target`.
+     */
+    allowedResources: Array<string> | "*";
+    /**
+     * Format of access tokens issued for a resource. The resource is set as `aud` claim.
+     * @default "jwt"
+     */
+    accessTokenFormat?: "jwt" | "opaque";
+};
+
 type SharedConfig = {
     port?: number;
     issuer?: string;
@@ -25,6 +39,11 @@ type SharedConfig = {
      */
     profileClaims?: Array<string>;
     client: ClientMetadata;
+    /**
+     * Optional. Accept Resource Indicators (RFC 8707). If not set, every `resource` parameter is
+     * rejected with `invalid_target`.
+     */
+    resourceIndicators?: ResourceIndicatorsConfig;
 };
 
 export type DevOidcProviderConfig =
@@ -83,7 +102,7 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
             profileClaims = users.length > 0 ? Object.keys(users[0]).filter((key) => key !== "id" && key !== "email") : ["name"];
         }
 
-        const provider = new Provider(issuer, createConfiguration(getUser, profileClaims, config.client));
+        const provider = new Provider(issuer, createConfiguration(getUser, profileClaims, config.client, config.resourceIndicators));
 
         render(provider, {
             cache: false,

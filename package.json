@@ -31,6 +31,7 @@
     "sideEffects": false,
     "scripts": {
         "build": "tsc",
+        "test": "tsx --test test/*.test.ts",
         "lint": "run-p lint:eslint lint:tsc",
         "lint:ci": "npm run lint",
         "lint:eslint": "eslint --max-warnings 0 --ext .ts,.tsx,.js,.jsx,.json,.md src/ package.json",
