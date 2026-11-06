@@ -25,6 +25,13 @@ type SharedConfig = {
      */
     profileClaims?: Array<string>;
     client: ClientMetadata;
+    /**
+     * Optional. Resource Indicators (RFC 8707) that clients may request via the `resource`
+     * parameter: a list of URLs, or `"*"` to accept any resource. The requested resource is set as
+     * `aud` claim of the access token. Resources that are not allowed are rejected with
+     * `invalid_target`. If not set, every `resource` parameter is rejected.
+     */
+    allowedResources?: Array<string> | "*";
 };
 
 export type DevOidcProviderConfig =
@@ -83,7 +90,7 @@ export const startDevOidcProvider = async (config: DevOidcProviderConfig) => {
             profileClaims = users.length > 0 ? Object.keys(users[0]).filter((key) => key !== "id" && key !== "email") : ["name"];
         }
 
-        const provider = new Provider(issuer, createConfiguration(getUser, profileClaims, config.client));
+        const provider = new Provider(issuer, createConfiguration(getUser, profileClaims, config.client, config.allowedResources));
 
         render(provider, {
             cache: false,

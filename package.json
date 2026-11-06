@@ -36,6 +36,7 @@
         "lint:eslint": "eslint --max-warnings 0 --ext .ts,.tsx,.js,.jsx,.json,.md src/ package.json",
         "lint:prettier": "npx prettier --check './**/*.{js,json,md,yml,yaml}'",
         "lint:tsc": "tsc --project .",
+        "test": "tsx --test test/*.test.ts",
         "version": "changeset version && npm install"
     },
     "dependencies": {
