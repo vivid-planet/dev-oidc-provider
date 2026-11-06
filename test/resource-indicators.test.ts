@@ -10,13 +10,13 @@ const redirectUri = "http://localhost:5555/callback";
 let nextPort = 18080;
 const servers: Server[] = [];
 
-const start = async (resourceIndicators?: DevOidcProviderConfig["resourceIndicators"]) => {
+const start = async (allowedResources?: DevOidcProviderConfig["allowedResources"]) => {
     const port = nextPort++;
     const server = await startDevOidcProvider({
         port,
         listUsers: () => users,
         client: { client_id: "c", client_secret: "s", redirect_uris: [redirectUri] },
-        resourceIndicators,
+        allowedResources,
     });
     assert.ok(server);
     servers.push(server);
@@ -112,7 +112,7 @@ describe("resource indicators", () => {
     });
 
     it("accepts a listed resource and sets it as audience", async () => {
-        const base = await start({ allowedResources: ["http://localhost:4600/mcp"] });
+        const base = await start(["http://localhost:4600/mcp"]);
         const { error, tokenResponse } = await runFlow(base, "http://localhost:4600/mcp");
         assert.equal(error, undefined);
         const payload = decodeJwt(tokenResponse?.access_token as string);
@@ -122,12 +122,12 @@ describe("resource indicators", () => {
     });
 
     it("rejects an unlisted resource", async () => {
-        const base = await start({ allowedResources: ["http://localhost:4600/mcp"] });
+        const base = await start(["http://localhost:4600/mcp"]);
         assert.equal((await runFlow(base, "http://localhost:9999/other")).error, "invalid_target");
     });
 
     it("accepts any resource with wildcard", async () => {
-        const base = await start({ allowedResources: "*" });
+        const base = await start("*");
         const { tokenResponse } = await runFlow(base, "http://localhost:9999/other");
         assert.equal(decodeJwt(tokenResponse?.access_token as string).aud, "http://localhost:9999/other");
     });

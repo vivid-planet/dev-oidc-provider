@@ -1,6 +1,6 @@
 import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
 
-import type { GetUser, ResourceIndicatorsConfig } from "./";
+import type { GetUser } from "./";
 
 const resourceScope = "openid email profile offline_access";
 
@@ -8,8 +8,8 @@ export const createConfiguration: (
     getUser: GetUser,
     profileClaims: Array<string>,
     client: ClientMetadata,
-    resourceIndicators?: ResourceIndicatorsConfig,
-) => Configuration = (getUser, profileClaims, client, resourceIndicators) => ({
+    allowedResources?: Array<string> | "*",
+) => Configuration = (getUser, profileClaims, client, allowedResources) => ({
     clients: [client],
     clientDefaults: {
         grant_types: ["authorization_code", "refresh_token"],
@@ -38,13 +38,12 @@ export const createConfiguration: (
             },
         },
         introspection: { enabled: true },
-        // Without `resourceIndicators` config every `resource` parameter is rejected with `invalid_target` (default of oidc-provider)
-        ...(resourceIndicators
+        // Without `allowedResources` config every `resource` parameter is rejected with `invalid_target` (default of oidc-provider)
+        ...(allowedResources
             ? {
                   resourceIndicators: {
                       enabled: true,
                       getResourceServerInfo: async (_ctx, resourceIndicator) => {
-                          const { allowedResources } = resourceIndicators;
                           if (allowedResources !== "*" && !allowedResources.includes(resourceIndicator)) {
                               throw new errors.InvalidTarget();
                           }
