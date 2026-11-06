@@ -31,12 +31,12 @@
     "sideEffects": false,
     "scripts": {
         "build": "tsc",
-        "test": "tsx --test test/*.test.ts",
         "lint": "run-p lint:eslint lint:tsc",
         "lint:ci": "npm run lint",
         "lint:eslint": "eslint --max-warnings 0 --ext .ts,.tsx,.js,.jsx,.json,.md src/ package.json",
         "lint:prettier": "npx prettier --check './**/*.{js,json,md,yml,yaml}'",
         "lint:tsc": "tsc --project .",
+        "test": "tsx --test test/*.test.ts",
         "version": "changeset version && npm install"
     },
     "dependencies": {
