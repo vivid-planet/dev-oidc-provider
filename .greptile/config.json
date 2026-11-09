@@ -8,7 +8,7 @@
             "includeAuthors": ["fraxachun", "VPS-Obi"]
         }
     },
-    "ignoreKeywords": "Merge main\nMerge `main`",
+    "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`",
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
     "ignorePatterns": "**/package-lock.json"
 }
