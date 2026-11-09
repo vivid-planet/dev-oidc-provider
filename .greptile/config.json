@@ -1,0 +1,14 @@
+{
+    "autoReview": ["open"],
+    "triggerOnDrafts": false,
+    "autoApprove": {
+        "enabled": true,
+        "riskCeiling": "medium",
+        "filters": {
+            "includeAuthors": ["fraxachun", "VPS-Obi"]
+        }
+    },
+    "ignoreKeywords": "Merge main\nMerge `main`",
+    "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
+    "ignorePatterns": "**/package-lock.json"
+}
