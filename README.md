@@ -70,6 +70,24 @@ The `profile` scope's claims are, by default, inferred from the keys of the firs
 from, so set `profileClaims` explicitly in that case — or whenever you want to control which
 fields are exposed regardless of what `listUsers` returns.
 
+## Resource Indicators (RFC 8707)
+
+By default every `resource` parameter is rejected with `invalid_target`. Some clients (e.g. the
+MCP SDK) always send it, so you can allow resources with the optional `allowedResources` setting:
+
+```ts title="dev-oidc-provider.config.mts"
+export default defineConfig({
+    // list of allowed resources, or "*" to accept any resource
+    allowedResources: ["http://localhost:4600/mcp"],
+    // ...
+});
+```
+
+The requested resource is set as `aud` claim of the access token (a JWT). Note that the client has to send
+`resource` in the authorization request and in the token request. Access tokens issued for a
+resource are meant for that resource server, so they can't be used at the `userinfo` endpoint. The
+ID token is not affected. Without `allowedResources` nothing changes.
+
 ## Start dev-oidc-provider
 
 Execute `npx dev-oidc-provider` to start the application.

@@ -1,12 +1,15 @@
-import type { ClientMetadata, Configuration } from "oidc-provider";
+import { type ClientMetadata, type Configuration, errors } from "oidc-provider";
 
 import type { GetUser } from "./";
 
-export const createConfiguration: (getUser: GetUser, profileClaims: Array<string>, client: ClientMetadata) => Configuration = (
-    getUser,
-    profileClaims,
-    client,
-) => ({
+const resourceScope = "openid email profile offline_access";
+
+export const createConfiguration: (
+    getUser: GetUser,
+    profileClaims: Array<string>,
+    client: ClientMetadata,
+    allowedResources?: Array<string> | "*",
+) => Configuration = (getUser, profileClaims, client, allowedResources) => ({
     clients: [client],
     clientDefaults: {
         grant_types: ["authorization_code", "refresh_token"],
@@ -35,6 +38,25 @@ export const createConfiguration: (getUser: GetUser, profileClaims: Array<string
             },
         },
         introspection: { enabled: true },
+        // Without `allowedResources` config every `resource` parameter is rejected with `invalid_target` (default of oidc-provider)
+        ...(allowedResources
+            ? {
+                  resourceIndicators: {
+                      enabled: true,
+                      getResourceServerInfo: async (_ctx, resourceIndicator) => {
+                          if (allowedResources !== "*" && !allowedResources.includes(resourceIndicator)) {
+                              throw new errors.InvalidTarget();
+                          }
+                          return {
+                              scope: resourceScope,
+                              // the resource becomes the `aud` claim of the access token
+                              audience: resourceIndicator,
+                              accessTokenFormat: "jwt",
+                          };
+                      },
+                  },
+              }
+            : {}),
     },
     // Skip consent prompt: https://github.com/panva/node-oidc-provider/discussions/1307
     async loadExistingGrant(ctx) {
@@ -69,6 +91,9 @@ export const createConfiguration: (getUser: GetUser, profileClaims: Array<string
 
         grant.addOIDCScope("openid email profile");
         grant.addOIDCClaims(["name"]);
+        for (const resource of Object.keys(ctx.oidc.resourceServers ?? {})) {
+            grant.addResourceScope(resource, resourceScope);
+        }
         await grant.save();
         return grant;
     },
