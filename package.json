@@ -43,7 +43,7 @@
         "@koa/ejs": "^5.1.0",
         "@koa/router": "^15.7.1",
         "koa-body": "^8.0.1",
-        "oidc-provider": "^9.13.3",
+        "oidc-provider": "^9.14.0",
         "unconfig": "^7.5.0"
     },
     "devDependencies": {
