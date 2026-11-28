@@ -50,7 +50,7 @@
         "@changesets/cli": "^3.0.3",
         "@dextinity/eslint-config": "^10.16.0",
         "@types/koa__ejs": "^5.1.1",
-        "@types/node": "^24.19.2",
+        "@types/node": "^24.19.4",
         "@types/oidc-provider": "^9.15.0",
         "eslint": "^9.39.5",
         "npm-run-all2": "^9.1.0",
